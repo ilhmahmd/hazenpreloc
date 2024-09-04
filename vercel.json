@@ -14,10 +14,5 @@
             "src": "/(.*)",
             "dest": "app.py"
         }
-    ],
-    "functions": {
-        "api/*.py": {
-            "excludeFiles": ["**/*.md", "tests/**", "docs/**", "*.pyc", "*.txt", "data/**"]
-        }
-    }
+    ]
 }
