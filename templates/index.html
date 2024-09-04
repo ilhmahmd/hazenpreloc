@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prewedding Locations</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: 'Nunito', sans-serif;">
+    <nav class="navbar navbar-expand">
+        <div class="mx-auto">
+            <a class="navbar-brand" href="/" style="font-size: 1.2em; font-weight: 600;">Hazen Pictures</a>
+        </div>
+    </nav>
+    <!-- Banner -->
+    <div class="banner" style="position: relative;">
+        <img src="{{ url_for('static', filename='image/banner2.jpg') }}" alt="Banner" class="img-fluid">
+        <div class="text-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;">
+            <h1 style="font-size: 2em; font-weight: 600;">Lokasi Prewedding</h1>
+            <p style="font-size: 1em;">Temukan lokasi prewedding untukmu!</p>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-3 col-md-4 filter-sidebar">
+                <form method="GET" action="/" id="sortForm">
+                    <div class="mb-4">
+                        <select id="sortByType" name="sortbytype" class="form-control">
+                            <option value="">Tipe</option>
+                            {% for tipe in unique_tipes %}
+                            <option value="{{ tipe }}" {% if request.args.get('sortbytype') == tipe %}selected{% endif %}>{{ tipe }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <select id="sortByTema" name="sortbytema" class="form-control">
+                            <option value="">Tema</option>
+                            {% for tema in unique_temas %}
+                            <option value="{{ tema }}" {% if request.args.get('sortbytema') == tema %}selected{% endif %}>{{ tema }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <select id="sortByHarga" name="sortbyharga" class="form-control">
+                            <option value="">Harga</option>
+                            <option value="asc" {% if request.args.get('sortbyharga') == 'asc' %}selected{% endif %}>Rendah ke Tinggi</option>
+                            <option value="desc" {% if request.args.get('sortbyharga') == 'desc' %}selected{% endif %}>Tinggi ke Rendah</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-9 col-md-8">
+                <div class="row">
+                    {% if locations %}
+                        {% for location in locations %}
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <a href="/detail/{{ location['tempat'] }}" class="card-link">
+                                <div class="card">
+                                    <img class="card-img-top" src="{{ location['gambar'] }}" alt="Card image cap">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ location['tempat'] }}</h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>                        
+                        {% endfor %}
+                    {% else %}
+                        <p>No locations found</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0">Get your moment for love</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.querySelectorAll('#sortForm select').forEach(function(select) {
+            select.addEventListener('change', function() {
+                document.getElementById('sortForm').submit();
+            });
+        });
+    </script>
+</body>
+</html>

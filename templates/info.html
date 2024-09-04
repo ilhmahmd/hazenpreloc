@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Details for {{ location['tempat'] }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .main-img, .small-img {
+            width: 100%;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .main-img {
+            height: 400px;
+        }
+
+        .small-img {
+            height: 180px;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #6c757d;
+        }
+
+        .i {
+            color: #6c757d;
+        }
+
+        footer.footer {
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            border-top: 1px solid #e9ecef;
+            bottom: 0;
+            width: 100%;
+            left: 0;
+            height: 100px;
+            margin-top: 100px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        footer.footer p {
+            color: #6c757d;
+            margin: 0;
+            font-size: 1em;
+            padding-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-img {
+                height: 250px;
+            }
+
+            .small-img {
+                height: 100px;
+            }
+
+            #map {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-img, .small-img {
+                width: 100%;
+                height: auto;
+            }
+
+            #map {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <i class="fa fa-arrow-left"></i> <a href="/" class="back-link">Kembali</a>
+        <h1 class="my-4" style="font-size: 2.5em; font-weight: 700;">{{ location['tempat'] }}</h1>
+        <div class="row">
+            <div class="col-md-7">
+                <img id="main-image" class="img-fluid main-img" src="{{ location['gambar'] }}" alt="{{ location['tempat'] }}">
+            </div>
+            <div class="col-md-5">
+                <h3 class="my-3" style="font-size: 1.75em; font-weight: 700;">Info Lokasi</h3>
+                <p>Alamat : {{ location['alamat'] }}</p>
+                <p>Jarak : {{ location['jarak'] }} KM (Dari Pusat Kota Batam)</p>
+                <p>Harga : Rp {{ location['harga'] }}</p>
+                <div class="row mt-3">
+                    {% if location['gambar'] %}
+                    <div class="col-4">
+                        <img class="img-fluid small-img" src="{{ location['gambar'] }}" alt="Gambar" onclick="changeMainImage('{{ location['gambar'] }}')">
+                    </div>
+                    {% endif %}
+                    
+                    {% if location['gambar2'] %}
+                    <div class="col-4">
+                        <img class="img-fluid small-img" src="{{ location['gambar2'] }}" alt="Gambar 2" onclick="changeMainImage('{{ location['gambar2'] }}')">
+                    </div>
+                    {% endif %}
+                    
+                    {% if location['gambar3'] %}
+                    <div class="col-4">
+                        <img class="img-fluid small-img" src="{{ location['gambar3'] }}" alt="Gambar 3" onclick="changeMainImage('{{ location['gambar3'] }}')">
+                    </div>
+                    {% endif %}
+                </div>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div id="map"></div>
+            </div>
+        </div>
+        <h3 class="my-4" style="font-size: 1.75em; font-weight: 700;">Rekomendasi Lokasi Serupa</h3>
+        <div class="row">
+            {% for rec in recommendations %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <a href="/detail/{{ rec['tempat'] }}" class="card-link">
+                    <div class="card">
+                        <img class="card-img-top" src="{{ rec['gambar'] }}" alt="Gambar">
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-size: 1.25em; font-weight: 700;">{{ rec['tempat'] }}</h5>
+                            <!-- <p class="card-text">Cosine Similarity: {{ rec['similarity'] | round(2) }}</p> -->
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var location = [{{ location['latitude'] }}, {{ location['longitude'] }}];
+            var map = L.map('map').setView(location, 15);
+    
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+    
+            L.marker(location).addTo(map)
+                .bindPopup('<b>{{ location["tempat"] }}</b><br>{{ location["alamat"] }}')
+                .openPopup();
+        });
+    
+        function changeMainImage(src) {
+            document.getElementById('main-image').src = src;
+        }
+    </script>
+    
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0"><i class="fas fa-copyright"></i> Hazen Pictures x ITG Copyright 2024</p>
+        </div>
+    </footer>
+</body>
+</html>
