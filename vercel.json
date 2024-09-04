@@ -1,9 +1,23 @@
 {
     "version": 2,
     "builds": [
-        {"src": "app.py", "use": "@vercel/python"}
+        {
+            "src": "app.py",
+            "use": "@vercel/python",
+            "config": {
+                "maxLambdaSize": "250mb"
+            }
+        }
     ],
-    "routes":[
-        {"src": "/(.*)", "dest": "app.py"}
-    ]
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "app.py"
+        }
+    ],
+    "functions": {
+        "api/*.py": {
+            "excludeFiles": ["**/*.md", "tests/**", "docs/**", "*.pyc", "*.txt", "data/**"]
+        }
+    }
 }
