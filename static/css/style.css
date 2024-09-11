@@ -127,6 +127,42 @@ footer.footer p {
     margin: 0;
 }
 
+.search-sort-container {
+    display: flex;
+    align-items: center;
+}
+.search-field {
+    flex: 1;
+}
+.sort-buttons {
+    margin-left: 10px; /* Adjust the gap between search and sort buttons */
+}
+
+.custom-select-wrapper {
+    position: relative;
+}
+.custom-select-wrapper .form-control {
+    padding-left: 2.5rem; /* Adjust padding for icon */
+}
+.custom-select-wrapper .icon {
+    position: absolute;
+    left: 0.5rem; /* Adjust icon position */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem; /* Smaller icon size */
+    color: #6c757d; /* Subtle color */
+}
+.search-sort-container {
+    display: flex;
+    align-items: center;
+}
+.search-field {
+    flex: 1;
+}
+.sort-buttons {
+    margin-left: 10px; /* Adjust the gap between search and sort buttons */
+}
+
 @media (max-width: 768px) {
     .main-img {
         height: 250px;

@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="font-family: 'Nunito', sans-serif;">
@@ -26,31 +27,58 @@
         <div class="row">
             <div class="col-lg-3 col-md-4 filter-sidebar">
                 <form method="GET" action="/" id="sortForm">
+                    <!-- Search Field with Icon -->
+                    <div class="search-sort-container mb-4">
+                        <div class="search-field">
+                            <div class="input-group">
+                                <input type="text" id="searchQuery" name="search" class="form-control" placeholder="Cari lokasi" value="{{ request.args.get('search', '') }}">
+                                <button type="button" id="searchButton" class="btn btn-light">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="sort-buttons">
+                            <button type="submit" class="btn btn-light" name="sort" value="asc">
+                                <i class="fas fa-sort-alpha-down"></i>
+                            </button>
+                            <button type="submit" class="btn btn-light" name="sort" value="desc">
+                                <i class="fas fa-sort-alpha-down-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sort by Tipe -->
                     <div class="mb-4">
                         <select id="sortByType" name="sortbytype" class="form-control">
-                            <option value="">Tipe</option>
+                            <option value=""><b>Tipe</b></option>
                             {% for tipe in unique_tipes %}
                             <option value="{{ tipe }}" {% if request.args.get('sortbytype') == tipe %}selected{% endif %}>{{ tipe }}</option>
                             {% endfor %}
                         </select>
                     </div>
+
+                    <!-- Sort by Tema -->
                     <div class="mb-4">
                         <select id="sortByTema" name="sortbytema" class="form-control">
-                            <option value="">Tema</option>
+                            <option value=""><b>Tema</b></option>
                             {% for tema in unique_temas %}
                             <option value="{{ tema }}" {% if request.args.get('sortbytema') == tema %}selected{% endif %}>{{ tema }}</option>
                             {% endfor %}
                         </select>
                     </div>
+
+                    <!-- Sort by Harga Ascending/Descending -->
                     <div class="mb-4">
                         <select id="sortByHarga" name="sortbyharga" class="form-control">
-                            <option value="">Harga</option>
+                            <option value=""><b>Harga</b></option>
                             <option value="asc" {% if request.args.get('sortbyharga') == 'asc' %}selected{% endif %}>Rendah ke Tinggi</option>
                             <option value="desc" {% if request.args.get('sortbyharga') == 'desc' %}selected{% endif %}>Tinggi ke Rendah</option>
                         </select>
                     </div>
                 </form>
             </div>
+
+            <!-- Display Locations -->
             <div class="col-lg-9 col-md-8">
                 <div class="row">
                     {% if locations %}
@@ -84,11 +112,25 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
+        // Function to handle search input
+        document.getElementById('searchButton').addEventListener('click', function() {
+            document.getElementById('sortForm').submit();
+        });
+
+        // Handle Enter key press
+        document.getElementById('searchQuery').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent form from submitting normally
+                document.getElementById('searchButton').click(); // Trigger search button click
+            }
+        });
+
+        // Submit form when select options change
         document.querySelectorAll('#sortForm select').forEach(function(select) {
             select.addEventListener('change', function() {
                 document.getElementById('sortForm').submit();
             });
         });
-    </script>
+    </script> 
 </body>
 </html>

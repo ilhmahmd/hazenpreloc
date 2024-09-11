@@ -48,25 +48,38 @@ model = RecommendationModel(db_path='data/locations.db')
 
 @app.route('/')
 def index():
+    search_query = request.args.get('search', None)
+    sort = request.args.get('sort', None)
     sort_by_type = request.args.get('sortbytype', None)
     sort_by_tema = request.args.get('sortbytema', None)
     sort_by_harga = request.args.get('sortbyharga', None)
     
     filtered_df = model.data.copy()
-    
+
+    # Search Filter
+    if search_query:
+        filtered_df = filtered_df[filtered_df['tempat'].str.contains(search_query, case=False, na=False)]
+
+    # Filter by Type
     if sort_by_type:
         filtered_df = filtered_df[filtered_df['tipe'] == sort_by_type]
     
+    # Filter by Tema
     if sort_by_tema:
         filtered_df = filtered_df[filtered_df['tema'] == sort_by_tema]
     
+    # Sort by Harga
     if sort_by_harga:
         filtered_df = filtered_df.sort_values(by='harga', ascending=(sort_by_harga == 'asc'))
     
+    # Sort by Location Name
+    if sort:
+        filtered_df = filtered_df.sort_values(by='tempat', ascending=(sort == 'asc'))
+
     locations = filtered_df.to_dict('records')
     unique_tipes = model.data['tipe'].unique()
     unique_temas = model.data['tema'].unique()
-    
+
     return render_template('index.html', locations=locations, unique_tipes=unique_tipes, unique_temas=unique_temas)
 
 
